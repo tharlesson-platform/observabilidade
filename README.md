@@ -219,6 +219,21 @@ No laboratorio local, os exemplos sobem com profile `examples` em:
 
 Guia completo: [`docs/local-lab.md`](docs/local-lab.md)
 
+## Ferramentas CLI complementares
+
+Esta plataforma de observabilidade pode ser combinada com repositorios irmaos focados em engenharia operacional e padronizacao de SRE:
+
+- `slo-factory`: gera SLOs, PrometheusRule, alertas de burn rate, scorecard e dashboard base.
+- `platform-scorecard`: mede maturidade operacional por servico e ajuda a priorizar backlog.
+- `kubernetes-upgrade-readiness-analyzer`: avalia manifests e readiness para upgrades Kubernetes/EKS.
+
+Uso combinado sugerido:
+
+- usar este repositorio para provisionar coleta, dashboards e alerting;
+- usar `slo-factory` para gerar o pacote inicial de SLO/SLI dos servicos observados;
+- usar `platform-scorecard` para medir gaps de operacao e governanca;
+- usar `kubernetes-upgrade-readiness-analyzer` antes de janelas de upgrade ou mudancas de cluster.
+
 Passos rapidos:
 
 ```bash
