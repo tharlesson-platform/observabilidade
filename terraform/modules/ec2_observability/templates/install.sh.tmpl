@@ -18,10 +18,10 @@ fi
 id -u node_exporter >/dev/null 2>&1 || useradd --no-create-home --shell /usr/sbin/nologin node_exporter
 
 curl -fsSL -o /tmp/node_exporter.tar.gz \
-  "https://github.com/prometheus/node_exporter/releases/download/v${NODE_EXPORTER_VERSION}/node_exporter-${NODE_EXPORTER_VERSION}.linux-amd64.tar.gz"
+  "https://github.com/prometheus/node_exporter/releases/download/v$${NODE_EXPORTER_VERSION}/node_exporter-$${NODE_EXPORTER_VERSION}.linux-amd64.tar.gz"
 
 tar -xzf /tmp/node_exporter.tar.gz -C /tmp
-install -m 0755 "/tmp/node_exporter-${NODE_EXPORTER_VERSION}.linux-amd64/node_exporter" /usr/local/bin/node_exporter
+install -m 0755 "/tmp/node_exporter-$${NODE_EXPORTER_VERSION}.linux-amd64/node_exporter" /usr/local/bin/node_exporter
 
 cat >/etc/systemd/system/node_exporter.service <<'EOF'
 [Unit]
@@ -46,7 +46,7 @@ mkdir -p /etc/otelcol /var/lib/otelcol
 chown -R otelcol:otelcol /etc/otelcol /var/lib/otelcol
 
 curl -fsSL -o /tmp/otelcol-contrib.tar.gz \
-  "https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v${OTELCOL_VERSION}/otelcol-contrib_${OTELCOL_VERSION}_linux_amd64.tar.gz"
+  "https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v$${OTELCOL_VERSION}/otelcol-contrib_$${OTELCOL_VERSION}_linux_amd64.tar.gz"
 
 tar -xzf /tmp/otelcol-contrib.tar.gz -C /tmp
 install -m 0755 /tmp/otelcol-contrib /usr/local/bin/otelcol-contrib

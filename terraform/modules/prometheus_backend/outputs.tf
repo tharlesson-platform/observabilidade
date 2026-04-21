@@ -1,6 +1,6 @@
 output "workspace_id" {
   description = "AMP workspace id when backend_mode=amp"
-  value       = try(aws_prometheus_workspace.this[0].workspace_id, null)
+  value       = try(aws_prometheus_workspace.this[0].id, null)
 }
 
 output "workspace_arn" {
