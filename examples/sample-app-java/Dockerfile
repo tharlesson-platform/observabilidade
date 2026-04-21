@@ -4,7 +4,7 @@ COPY pom.xml /src/pom.xml
 COPY src /src/src
 RUN mvn -q -DskipTests package
 
-FROM eclipse-temurin:21-jre-alpine
+FROM eclipse-temurin:25-jre-alpine
 WORKDIR /app
 COPY --from=build /src/target/sample-app-java-1.0.0.jar /app/app.jar
 RUN wget -q -O /app/opentelemetry-javaagent.jar https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v2.11.0/opentelemetry-javaagent.jar
