@@ -142,20 +142,20 @@ resource "helm_release" "kube_prometheus_stack" {
     for path in var.kube_prometheus_values_files : file(path)
   ]
 
-  set {
-    name  = "commonLabels.environment"
-    value = var.environment
-  }
-
-  set {
-    name  = "commonLabels.cluster"
-    value = var.cluster_name
-  }
-
-  set {
-    name  = "commonLabels.team"
-    value = var.team
-  }
+  set = [
+    {
+      name  = "commonLabels.environment"
+      value = var.environment
+    },
+    {
+      name  = "commonLabels.cluster"
+      value = var.cluster_name
+    },
+    {
+      name  = "commonLabels.team"
+      value = var.team
+    },
+  ]
 
   depends_on = [kubernetes_namespace_v1.observability]
 }
@@ -173,20 +173,20 @@ resource "helm_release" "otel_collector" {
     for path in var.otel_collector_values_files : file(path)
   ]
 
-  set {
-    name  = "mode"
-    value = "daemonset"
-  }
-
-  set {
-    name  = "serviceAccount.create"
-    value = "false"
-  }
-
-  set {
-    name  = "serviceAccount.name"
-    value = kubernetes_service_account_v1.adot.metadata[0].name
-  }
+  set = [
+    {
+      name  = "mode"
+      value = "daemonset"
+    },
+    {
+      name  = "serviceAccount.create"
+      value = "false"
+    },
+    {
+      name  = "serviceAccount.name"
+      value = kubernetes_service_account_v1.adot.metadata[0].name
+    },
+  ]
 
   depends_on = [
     helm_release.kube_prometheus_stack,
