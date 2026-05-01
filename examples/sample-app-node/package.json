@@ -7,7 +7,7 @@
     "start": "node app.js"
   },
   "dependencies": {
-    "@opentelemetry/auto-instrumentations-node": "^0.55.1",
+    "@opentelemetry/auto-instrumentations-node": "^0.74.0",
     "@opentelemetry/exporter-metrics-otlp-grpc": "^0.215.0",
     "@opentelemetry/exporter-trace-otlp-grpc": "^0.215.0",
     "@opentelemetry/resources": "^2.7.0",
