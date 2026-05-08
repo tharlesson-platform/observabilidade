@@ -7,6 +7,11 @@ updates:
       time: "09:00"
       timezone: "America/Sao_Paulo"
     open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: '*'
+        update-types:
+          - version-update:semver-minor
+          - version-update:semver-patch
   - package-ecosystem: "docker"
     directory: "/examples/sample-app-node"
     schedule:
@@ -14,6 +19,11 @@ updates:
       time: "09:00"
       timezone: "America/Sao_Paulo"
     open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: '*'
+        update-types:
+          - version-update:semver-minor
+          - version-update:semver-patch
   - package-ecosystem: "docker"
     directory: "/examples/sample-app-python"
     schedule:
@@ -21,6 +31,11 @@ updates:
       time: "09:00"
       timezone: "America/Sao_Paulo"
     open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: '*'
+        update-types:
+          - version-update:semver-minor
+          - version-update:semver-patch
   - package-ecosystem: "maven"
     directory: "/examples/sample-app-java"
     schedule:
@@ -28,6 +43,11 @@ updates:
       time: "09:00"
       timezone: "America/Sao_Paulo"
     open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: '*'
+        update-types:
+          - version-update:semver-minor
+          - version-update:semver-patch
   - package-ecosystem: "npm"
     directory: "/examples/sample-app-node"
     schedule:
@@ -35,6 +55,11 @@ updates:
       time: "09:00"
       timezone: "America/Sao_Paulo"
     open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: '*'
+        update-types:
+          - version-update:semver-minor
+          - version-update:semver-patch
   - package-ecosystem: "pip"
     directory: "/examples/sample-app-python"
     schedule:
@@ -42,6 +67,11 @@ updates:
       time: "09:00"
       timezone: "America/Sao_Paulo"
     open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: '*'
+        update-types:
+          - version-update:semver-minor
+          - version-update:semver-patch
   - package-ecosystem: "terraform"
     directory: "/terraform/environments/dev"
     schedule:
@@ -49,6 +79,11 @@ updates:
       time: "09:00"
       timezone: "America/Sao_Paulo"
     open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: '*'
+        update-types:
+          - version-update:semver-minor
+          - version-update:semver-patch
   - package-ecosystem: "terraform"
     directory: "/terraform/environments/prod"
     schedule:
@@ -56,6 +91,11 @@ updates:
       time: "09:00"
       timezone: "America/Sao_Paulo"
     open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: '*'
+        update-types:
+          - version-update:semver-minor
+          - version-update:semver-patch
   - package-ecosystem: "terraform"
     directory: "/terraform/environments/stage"
     schedule:
@@ -63,6 +103,11 @@ updates:
       time: "09:00"
       timezone: "America/Sao_Paulo"
     open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: '*'
+        update-types:
+          - version-update:semver-minor
+          - version-update:semver-patch
   - package-ecosystem: "terraform"
     directory: "/terraform/modules/ec2_observability"
     schedule:
@@ -70,6 +115,11 @@ updates:
       time: "09:00"
       timezone: "America/Sao_Paulo"
     open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: '*'
+        update-types:
+          - version-update:semver-minor
+          - version-update:semver-patch
   - package-ecosystem: "terraform"
     directory: "/terraform/modules/ecs_observability"
     schedule:
@@ -77,6 +127,11 @@ updates:
       time: "09:00"
       timezone: "America/Sao_Paulo"
     open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: '*'
+        update-types:
+          - version-update:semver-minor
+          - version-update:semver-patch
   - package-ecosystem: "terraform"
     directory: "/terraform/modules/eks_observability"
     schedule:
@@ -84,6 +139,11 @@ updates:
       time: "09:00"
       timezone: "America/Sao_Paulo"
     open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: '*'
+        update-types:
+          - version-update:semver-minor
+          - version-update:semver-patch
   - package-ecosystem: "terraform"
     directory: "/terraform/modules/prometheus_backend"
     schedule:
@@ -91,3 +151,8 @@ updates:
       time: "09:00"
       timezone: "America/Sao_Paulo"
     open-pull-requests-limit: 5
+    ignore:
+      - dependency-name: '*'
+        update-types:
+          - version-update:semver-minor
+          - version-update:semver-patch
