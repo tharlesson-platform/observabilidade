@@ -6,6 +6,9 @@
   "scripts": {
     "start": "node app.js"
   },
+  "overrides": {
+    "brace-expansion": "^5.0.8"
+  },
   "dependencies": {
     "@opentelemetry/auto-instrumentations-node": "^0.77.0",
     "@opentelemetry/exporter-metrics-otlp-grpc": "^0.215.0",
