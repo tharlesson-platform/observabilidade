@@ -10,12 +10,13 @@
     "brace-expansion": "^5.0.9"
   },
   "dependencies": {
-    "@opentelemetry/auto-instrumentations-node": "^0.79.0",
-    "@opentelemetry/exporter-metrics-otlp-grpc": "^0.221.0",
-    "@opentelemetry/exporter-trace-otlp-grpc": "^0.221.0",
-    "@opentelemetry/resources": "^2.7.0",
+    "@opentelemetry/api": "^1.10.0",
+    "@opentelemetry/auto-instrumentations-node": "^0.82.0",
+    "@opentelemetry/exporter-metrics-otlp-grpc": "^0.300.0",
+    "@opentelemetry/exporter-trace-otlp-grpc": "^0.300.0",
+    "@opentelemetry/resources": "^3.0.0",
     "@opentelemetry/sdk-metrics": "^3.0.0",
-    "@opentelemetry/sdk-node": "^0.221.0",
+    "@opentelemetry/sdk-node": "^0.300.0",
     "@opentelemetry/semantic-conventions": "^1.27.0",
     "express": "^5.2.1",
     "prom-client": "^15.1.3"

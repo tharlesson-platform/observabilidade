@@ -29,7 +29,7 @@ const sdk = new NodeSDK({
   traceExporter: new OTLPTraceExporter({
     url: process.env.OTEL_EXPORTER_OTLP_ENDPOINT || 'http://otel-collector:4317'
   }),
-  metricReader,
+  metricReaders: [metricReader],
   instrumentations: [getNodeAutoInstrumentations()]
 });
 
