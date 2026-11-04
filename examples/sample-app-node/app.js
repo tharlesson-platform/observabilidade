@@ -1,4 +1,3 @@
-const express = require('express');
 const client = require('prom-client');
 
 const { NodeSDK } = require('@opentelemetry/sdk-node');
@@ -36,6 +35,8 @@ const sdk = new NodeSDK({
 
 sdk.start();
 
+// Load Express after registering its OpenTelemetry instrumentation.
+const express = require('express');
 const app = express();
 
 const registry = new client.Registry();
