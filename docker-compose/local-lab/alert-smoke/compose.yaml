@@ -1,0 +1,31 @@
+services:
+  fixture:
+    image: python:3.12-alpine
+    command: ["python", "-u", "/lab/lifecycle.py"]
+    volumes:
+      - ./lifecycle.py:/lab/lifecycle.py:ro
+  blackbox:
+    image: prom/blackbox-exporter:v0.25.0
+    command: ["--config.file=/lab/blackbox.yml"]
+    volumes:
+      - ../../../exporters/blackbox/blackbox.yml:/lab/blackbox.yml:ro
+  collector:
+    image: public.ecr.aws/aws-observability/aws-otel-collector:v0.43.0
+    command: ["--config=/lab/collector.yaml"]
+    volumes:
+      - ./collector.yaml:/lab/collector.yaml:ro
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    command: ["--config.file=/lab/prometheus.yaml"]
+    volumes:
+      - ./prometheus.yaml:/lab/prometheus.yaml:ro
+      - ../../../prometheus/rules/blackbox-alerts.yaml:/lab/rules/blackbox-alerts.yaml:ro
+  alertmanager:
+    image: prom/alertmanager:v0.28.0
+    command: ["--config.file=/lab/alertmanager.yaml", "--cluster.listen-address="]
+    volumes:
+      - ./alertmanager.yaml:/lab/alertmanager.yaml:ro
+
+networks:
+  default:
+    internal: true

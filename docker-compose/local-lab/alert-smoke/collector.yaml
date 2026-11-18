@@ -1,0 +1,33 @@
+receivers:
+  prometheus:
+    config:
+      scrape_configs:
+        - job_name: blackbox-http
+          scrape_interval: 2s
+          scrape_timeout: 2s
+          metrics_path: /probe
+          params:
+            module: [http_2xx]
+          static_configs:
+            - targets: ["http://fixture:8080/health"]
+          relabel_configs:
+            - source_labels: [__address__]
+              target_label: __param_target
+            - source_labels: [__param_target]
+              target_label: instance
+            - target_label: __address__
+              replacement: blackbox:9115
+          metric_relabel_configs:
+            - source_labels: [__name__]
+              regex: "probe_success"
+              action: keep
+
+exporters:
+  prometheus:
+    endpoint: 0.0.0.0:9464
+
+service:
+  pipelines:
+    metrics:
+      receivers: [prometheus]
+      exporters: [prometheus]
