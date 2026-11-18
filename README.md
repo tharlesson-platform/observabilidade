@@ -411,8 +411,7 @@ credenciais locais; não apagar dados para reverter configuração.
 
 As bases Docker são fixadas pelo digest do índice multiarch do registry oficial.
 Atualizações de base exigem nova resolução, build e revisão da PR; os antigos
-build-args de tag Jenkins não substituem mais a base revisada. Exemplos Java,
-Node e Python executam como UID/GID 10001, sem privilégios. Diretórios da
+build-args de tag Jenkins não substituem mais a base revisada. Exemplos Java e Python executam como UID/GID 10001; Node preserva o usuário node da base, sem privilégios. Diretórios da
 aplicação permanecem somente leitura para esse usuário; temporários usam /tmp.
 Nenhuma imagem é publicada ou promovida automaticamente por esta correção.
 Reversão: reverter a PR após revisão, sem remover volumes ou dados.

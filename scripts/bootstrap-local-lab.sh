@@ -7,6 +7,13 @@ CERT_DIR="$ROOT_DIR/.local-lab/certs"
 PROM_WEB="$LAB_DIR/prometheus/web.yml"
 ALERT_WEB="$LAB_DIR/alertmanager/web.yml"
 
+# Recusar redirecionamento por symlink antes de qualquer chmod/cópia/certificado.
+for output in "$ROOT_DIR/.local-lab" "$CERT_DIR" "$CERT_DIR/tls.crt" "$CERT_DIR/tls.key" "$ROOT_DIR/.env"; do
+  if [[ -L "$output" ]]; then
+    echo "Caminho de saída symlink não permitido." >&2
+    exit 1
+  fi
+done
 umask 077
 mkdir -p "$ROOT_DIR/.local-lab"
 chmod 0700 "$ROOT_DIR/.local-lab"

@@ -53,6 +53,40 @@ class LocalAuthTest(unittest.TestCase):
                 (output / (service + ".password")).read_text().strip(), values[variable]
             )
 
+    def test_wrapper_rejects_symlinks_before_side_effects(self):
+        original = SCRIPT.parent / "bootstrap-local-lab.sh"
+        for relative in [
+            ".local-lab",
+            ".local-lab/certs",
+            ".local-lab/certs/tls.key",
+            ".local-lab/certs/tls.crt",
+            ".env",
+        ]:
+            with (
+                self.subTest(relative=relative),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                root = Path(directory) / "repo"
+                (root / "scripts").mkdir(parents=True)
+                wrapper = root / "scripts/bootstrap-local-lab.sh"
+                wrapper.write_bytes(original.read_bytes())
+                outside = Path(directory) / "outside"
+                outside.mkdir(mode=0o750)
+                sentinel = outside / "preserve"
+                sentinel.write_text("preserve")
+                path = root / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.symlink_to(outside, target_is_directory=True)
+                before = stat.S_IMODE(outside.stat().st_mode)
+                result = subprocess.run(
+                    ["/bin/bash", str(wrapper)], capture_output=True, text=True
+                )
+                self.assertNotEqual(result.returncode, 0)
+                self.assertIn("symlink", result.stderr)
+                self.assertEqual(stat.S_IMODE(outside.stat().st_mode), before)
+                self.assertEqual(sentinel.read_text(), "preserve")
+                self.assertEqual(list(outside.iterdir()), [sentinel])
+
     def test_symlink_directory_rejected(self):
         (self.root / ".local-lab").symlink_to(self.root, target_is_directory=True)
         with self.assertRaises(ValueError):
