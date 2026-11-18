@@ -292,6 +292,7 @@ make down-local
 
 make lint
 make validate
+make lint-helm
 
 make deploy ENV=dev
 make destroy ENV=dev
@@ -363,8 +364,17 @@ GitHub: https://github.com/tharlesson
 
 O check `guardrails` usa uma VM Linux ARM64 efêmera com label por execução,
 checkout do SHA exato e credenciais de checkout não persistidas. O job mantém as
-validações de CODEOWNERS, Dependabot e referências dos workflows, com limite de
-10 minutos. A VM não admite mounts do host, agente SSH ou acesso ao armazenamento
+validações de CODEOWNERS, Dependabot e referências dos workflows e roda o lint Helm,
+com limite de 10 minutos. A VM não admite mounts do host, agente SSH ou acesso ao armazenamento
 local de artifacts; o controlador exige revisão da fonte antes do registro.
-Esta validação não executa Terraform plan/apply, Helm nem alterações de cluster.
+O lint baixa as versões dos charts declaradas em Terraform para `dev`, `stage`
+e `prod` e aplica os values de cada ambiente. O Helm CLI do CI é a versão
+`4.3.2`, com SHA-256 verificado. Erros do Helm falham o job `guardrails`.
+Para reproduzir a etapa localmente, use `make lint-helm` com Helm e Python 3
+no PATH. O lint opera sobre arquivos locais e charts públicos.
+
+Para o Operator `0.83.0`, o lint corrige a anotação `manager.featureGates.examples`
+na cópia temporária do schema. Todas as restrições de valores continuam ativas.
+Os values do Operator contêm as chaves aceitas por essa versão do chart.
+
 A reversão consiste em reverter este commit pelo mesmo fluxo de PR e revisão.

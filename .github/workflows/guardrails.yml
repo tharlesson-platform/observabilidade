@@ -76,3 +76,15 @@ jobs:
 
           print('Guardrails baseline validated successfully.')
           PY
+      - name: Lint Helm charts
+        shell: bash
+        run: |
+          set -euo pipefail
+          helm_dir=$(mktemp -d)
+          trap 'rm -rf -- "$helm_dir"' EXIT
+          curl -fsSL --retry 2 --max-time 60 \
+            https://get.helm.sh/helm-v4.3.2-linux-arm64.tar.gz -o "$helm_dir/helm.tgz"
+          printf '%s  %s\n' 'df31cb61680ef728f82c770e5280dd565617bee6b039d37e85c677288be4bbb0' "$helm_dir/helm.tgz" |
+            sha256sum --check --strict
+          tar -xzf "$helm_dir/helm.tgz" -C "$helm_dir" linux-arm64/helm
+          PATH="$helm_dir/linux-arm64:$PATH" bash ./scripts/lint-helm.sh
