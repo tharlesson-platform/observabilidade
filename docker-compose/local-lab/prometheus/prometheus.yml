@@ -6,22 +6,54 @@ global:
     cluster: local-lab
     team: platform
     service: prometheus
-
 rule_files:
   - /etc/prometheus/rules/*.yaml
   - /etc/prometheus/recording-rules/*.yaml
-
-scrape_config_files:
-  - /etc/prometheus/scrape-configs/*.yaml
-
+# Perfil exclusivamente local: sem descoberta AWS/Kubernetes nem imports de snippets.
+scrape_configs:
+  - job_name: prometheus
+    scheme: https
+    tls_config:
+      ca_file: /etc/prometheus/certs/tls.crt
+    basic_auth:
+      username: prom_admin
+      password_file: /run/secrets/prometheus.password
+    static_configs:
+      - targets: [prometheus:9090]
+        labels: {service: prometheus, namespace: observability, team: platform}
+  - job_name: alertmanager
+    scheme: https
+    tls_config:
+      ca_file: /etc/prometheus/certs/tls.crt
+    basic_auth:
+      username: alert_admin
+      password_file: /run/secrets/alertmanager.password
+    static_configs:
+      - targets: [alertmanager:9093]
+        labels: {service: alertmanager, namespace: observability, team: platform}
+  - job_name: grafana
+    scheme: https
+    tls_config:
+      ca_file: /etc/prometheus/certs/tls.crt
+    static_configs:
+      - targets: [grafana:3000]
+        labels: {service: grafana, namespace: observability, team: platform}
+  - job_name: sample-apps
+    static_configs:
+      - targets: [sample-app-python:8080, sample-app-node:8080]
+        labels: {namespace: application, team: platform}
+  - job_name: sample-app-java
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets: [sample-app-java:8080]
+        labels: {namespace: application, team: platform}
 alerting:
   alertmanagers:
     - scheme: https
       tls_config:
-        insecure_skip_verify: true
+        ca_file: /etc/prometheus/certs/tls.crt
       basic_auth:
         username: alert_admin
-        password: alert-admin-change-me
+        password_file: /run/secrets/alertmanager.password
       static_configs:
-        - targets:
-            - alertmanager:9093
+        - targets: [alertmanager:9093]

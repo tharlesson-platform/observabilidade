@@ -1,0 +1,11 @@
+# Laboratório sem notificações externas. Canais reais exigem configuração explícita.
+global:
+  resolve_timeout: 5m
+route:
+  receiver: local-only
+  group_by: [alertname]
+  group_wait: 5s
+  group_interval: 30s
+  repeat_interval: 1h
+receivers:
+  - name: local-only

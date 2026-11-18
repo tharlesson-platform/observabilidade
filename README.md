@@ -385,3 +385,50 @@ O mesmo job valida a sintaxe das regras de alerta e recording rules com
 Para rodar os testes localmente, use `make test-prometheus` com `promtool` no PATH.
 
 A reversão consiste em reverter este commit pelo mesmo fluxo de PR e revisão.
+
+## Segurança do laboratório local
+
+Execute `scripts/bootstrap-local-lab.sh` antes de `scripts/up-local-lab.sh`.
+O bootstrap requer `htpasswd` local (pacote gratuito `apache2-utils` no Linux),
+gera senhas aleatórias em `.local-lab/lab.env` com modo 0600 e preserva-as
+na reexecução. Não imprime senhas nem interpreta `.env` como código shell.
+O diretório `.local-lab` é 0700 e ignorado pelo Git. Arquivos individuais de
+autenticação são montados somente leitura; não publique nem faça backup sem
+criptografia desse diretório. Os scrapers e healthchecks usam as mesmas senhas
+dos servidores, sem valores padrão no código. Todas as portas do Compose
+são publicadas exclusivamente em 127.0.0.1. Os certificados autoassinados e
+as exceções de validação TLS são restritos a este laboratório.
+
+Para comandos manuais: `docker compose --env-file .local-lab/lab.env -f
+docker-compose/local-lab/docker-compose.yml config --quiet`. O arquivo
+compartilhado de self-monitoring exige as senhas nos caminhos
+`/run/secrets/prometheus.password` e `/run/secrets/alertmanager.password`;
+outros consumidores devem fornecê-las explicitamente. Nenhum deploy AWS
+ou produção é executado. Reversão: reverter a PR, preservando volumes e
+credenciais locais; não apagar dados para reverter configuração.
+
+### Imagens dos exemplos e supply chain
+
+As bases Docker são fixadas pelo digest do índice multiarch do registry oficial.
+Atualizações de base exigem nova resolução, build e revisão da PR; os antigos
+build-args de tag Jenkins não substituem mais a base revisada. Exemplos Java e Python executam como UID/GID 10001; Node preserva o usuário node da base, sem privilégios. Diretórios da
+aplicação permanecem somente leitura para esse usuário; temporários usam /tmp.
+Nenhuma imagem é publicada ou promovida automaticamente por esta correção.
+Reversão: reverter a PR após revisão, sem remover volumes ou dados.
+
+O agente OpenTelemetry Java 2.11.0 é baixado no estágio de build com curl
+e verificado pelo SHA256 publicado no Maven Central antes da cópia para
+a imagem final. O runtime não precisa instalar ferramenta de download.
+
+O perfil local usa scrape_configs completos e somente alvos Docker explícitos,
+sem descoberta AWS/Kubernetes. Os snippets globais permanecem referências para
+outros ambientes. O CI também valida a sintaxe dessa configuração com promtool.
+Certificados novos incluem SAN para localhost e os três serviços, permitindo
+verificação de CA nos scrapers internos. Para certificados locais legados,
+regenere-os explicitamente antes do uso; não há rotação silenciosa de chave.
+
+Alertmanager local utiliza receiver sem integração externa; Grafana monta
+somente datasources/dashboards. Isso evita iniciar com tokens SMTP/Slack
+fictícios ou enviar mensagens externas. Notificações reais e configurações
+de produção continuam exigindo preparação e validação próprias. Os serviços
+internos constam em NO_PROXY por nome, sem liberar redes privadas do host.

@@ -10,7 +10,7 @@ TARGET="$1"
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 if [[ "$TARGET" == "local-lab" ]]; then
-  docker compose -f "$ROOT_DIR/docker-compose/local-lab/docker-compose.yml" down -v
+  docker compose --env-file "$ROOT_DIR/.local-lab/lab.env" -f "$ROOT_DIR/docker-compose/local-lab/docker-compose.yml" down -v
   echo "Local lab destroyed"
   exit 0
 fi

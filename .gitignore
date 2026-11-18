@@ -34,3 +34,6 @@ node_modules/
 Thumbs.db
 .vscode/
 .idea/
+
+# Credenciais geradas somente no host do laboratório
+.local-lab/

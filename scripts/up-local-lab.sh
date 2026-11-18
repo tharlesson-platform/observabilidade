@@ -9,9 +9,10 @@ if [[ ! -f "$ROOT_DIR/.env" ]]; then
   exit 1
 fi
 
+test -f "$ROOT_DIR/.local-lab/lab.env" || { echo "Execute scripts/bootstrap-local-lab.sh primeiro."; exit 1; }
 cd "$LAB_DIR"
-docker compose pull
-docker compose up -d
+docker compose --env-file "$ROOT_DIR/.local-lab/lab.env" pull
+docker compose --env-file "$ROOT_DIR/.local-lab/lab.env" up -d
 
 echo "Local lab is running:"
 echo "- Grafana: https://localhost:3000"
