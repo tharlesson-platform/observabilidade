@@ -36,6 +36,25 @@ docker compose -f docker-compose/local-lab/docker-compose.yml --profile examples
 - App Python: http://localhost:8082
 - App Java: http://localhost:8083
 
+## Testar disparo e resolução de um alerta
+
+```bash
+make smoke-alerts
+```
+
+Esse comando inicia um projeto Docker Compose isolado, com a regra
+`BlackboxEndpointDown` do repositório. Um endpoint sintético troca
+HTTP 200 por 503. O Blackbox Exporter mede a falha, o Collector
+exporta `probe_success` e o Prometheus avalia a regra com os três minutos
+de espera originais. Depois da notificação de disparo, o endpoint volta a
+responder 200 e o Alertmanager envia a resolução ao webhook do laboratório.
+
+Reserve cerca de quatro a cinco minutos após o download das imagens.
+A rede do cenário é interna e o webhook é local ao projeto Compose. O comando
+remove os containers, a rede e os volumes desse cenário ao terminar.
+Os arquivos `firing.json` e `resolved.json` ficam em `artifacts/alert-smoke.*`,
+com timestamps, estado do probe, evidência do Prometheus e payload recebido do Alertmanager.
+
 ## Parar
 
 ```bash

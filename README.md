@@ -293,6 +293,8 @@ make down-local
 make lint
 make validate
 make lint-helm
+make test-prometheus
+make smoke-alerts
 
 make deploy ENV=dev
 make destroy ENV=dev
@@ -376,5 +378,10 @@ no PATH. O lint opera sobre arquivos locais e charts públicos.
 Para o Operator `0.83.0`, o lint corrige a anotação `manager.featureGates.examples`
 na cópia temporária do schema. Todas as restrições de valores continuam ativas.
 Os values do Operator contêm as chaves aceitas por essa versão do chart.
+
+O mesmo job valida a sintaxe das regras de alerta e recording rules com
+`promtool check rules` e roda os cenários em `prometheus/tests/` com
+`promtool test rules`. O binário do CI é da versão `2.54.1`, a mesma do laboratório.
+Para rodar os testes localmente, use `make test-prometheus` com `promtool` no PATH.
 
 A reversão consiste em reverter este commit pelo mesmo fluxo de PR e revisão.
