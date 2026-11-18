@@ -1,10 +1,10 @@
-FROM maven:3.9.13-eclipse-temurin-25 AS build
+FROM maven:3.9.13-eclipse-temurin-25@sha256:ade3c87e3cdfbe04932afa16b31814cbf60b0122d21d78a76530684a1eeb7cc2 AS build
 WORKDIR /src
 COPY pom.xml /src/pom.xml
 COPY src /src/src
 RUN mvn -q -DskipTests package
 
-FROM eclipse-temurin:25-jre-alpine
+FROM eclipse-temurin:25-jre-alpine@sha256:e1898fd6a11fc965a994d8ace186fd3585aeb636cf8f05f47a723fcfee0b0918
 WORKDIR /app
 COPY --from=build /src/target/sample-app-java-1.0.0.jar /app/app.jar
 RUN wget -q -O /app/opentelemetry-javaagent.jar https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v2.11.0/opentelemetry-javaagent.jar
@@ -16,4 +16,5 @@ EXPOSE 8080
 
 HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD wget -qO- http://localhost:8080/healthz || exit 1
 
+USER 10001:10001
 CMD ["java", "-jar", "/app/app.jar"]

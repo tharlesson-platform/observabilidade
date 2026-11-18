@@ -4,7 +4,7 @@
     insecure_skip_verify: true
   basic_auth:
     username: prom_admin
-    password: prom-admin-change-me
+    password_file: /run/secrets/prometheus.password
   static_configs:
     - targets: ["prometheus:9090"]
       labels:
@@ -18,7 +18,7 @@
     insecure_skip_verify: true
   basic_auth:
     username: alert_admin
-    password: alert-admin-change-me
+    password_file: /run/secrets/alertmanager.password
   static_configs:
     - targets: ["alertmanager:9093"]
       labels:

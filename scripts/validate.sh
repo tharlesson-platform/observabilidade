@@ -28,6 +28,7 @@ done
 bash "$ROOT_DIR/scripts/lint-helm.sh"
 
 echo "[docker compose config]"
-docker compose -f "$ROOT_DIR/docker-compose/local-lab/docker-compose.yml" config >/dev/null
+test -f "$ROOT_DIR/.local-lab/lab.env" || { echo "Execute scripts/bootstrap-local-lab.sh antes da validação do Compose."; exit 1; }
+docker compose --env-file "$ROOT_DIR/.local-lab/lab.env" -f "$ROOT_DIR/docker-compose/local-lab/docker-compose.yml" config --quiet
 
 echo "Validation completed."

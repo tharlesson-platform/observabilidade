@@ -76,6 +76,12 @@ jobs:
 
           print('Guardrails baseline validated successfully.')
           PY
+      - name: Validate local authentication bootstrap
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s tests -p test_local_auth.py
+          bash -n scripts/bootstrap-local-lab.sh scripts/up-local-lab.sh
       - name: Lint Helm charts
         shell: bash
         run: |
