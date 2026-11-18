@@ -2,7 +2,7 @@ SHELL := /bin/bash
 
 ENV ?= dev
 
-.PHONY: bootstrap-local up-local down-local logs-local validate lint deploy destroy plan fmt
+.PHONY: bootstrap-local up-local down-local logs-local validate lint lint-helm deploy destroy plan fmt
 
 bootstrap-local:
 	bash ./scripts/bootstrap-local-lab.sh
@@ -21,6 +21,9 @@ validate:
 
 lint:
 	bash ./scripts/lint.sh
+
+lint-helm:
+	bash ./scripts/lint-helm.sh
 
 fmt:
 	terraform -chdir=terraform fmt -recursive

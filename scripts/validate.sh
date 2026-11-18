@@ -25,10 +25,7 @@ for env in dev stage prod; do
   fi
 done
 
-echo "[helm lint]"
-helm lint "$ROOT_DIR/helm/kube-prometheus-stack" || true
-helm lint "$ROOT_DIR/helm/otel-collector" || true
-helm lint "$ROOT_DIR/helm/otel-operator" || true
+bash "$ROOT_DIR/scripts/lint-helm.sh"
 
 echo "[docker compose config]"
 docker compose -f "$ROOT_DIR/docker-compose/local-lab/docker-compose.yml" config >/dev/null
