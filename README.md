@@ -419,3 +419,16 @@ Reversão: reverter a PR após revisão, sem remover volumes ou dados.
 O agente OpenTelemetry Java 2.11.0 é baixado no estágio de build com curl
 e verificado pelo SHA256 publicado no Maven Central antes da cópia para
 a imagem final. O runtime não precisa instalar ferramenta de download.
+
+O perfil local usa scrape_configs completos e somente alvos Docker explícitos,
+sem descoberta AWS/Kubernetes. Os snippets globais permanecem referências para
+outros ambientes. O CI também valida a sintaxe dessa configuração com promtool.
+Certificados novos incluem SAN para localhost e os três serviços, permitindo
+verificação de CA nos scrapers internos. Para certificados locais legados,
+regenere-os explicitamente antes do uso; não há rotação silenciosa de chave.
+
+Alertmanager local utiliza receiver sem integração externa; Grafana monta
+somente datasources/dashboards. Isso evita iniciar com tokens SMTP/Slack
+fictícios ou enviar mensagens externas. Notificações reais e configurações
+de produção continuam exigindo preparação e validação próprias. Os serviços
+internos constam em NO_PROXY por nome, sem liberar redes privadas do host.

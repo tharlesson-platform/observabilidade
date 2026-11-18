@@ -29,7 +29,8 @@ if [[ ! -f "$CERT_DIR/tls.crt" || ! -f "$CERT_DIR/tls.key" ]]; then
   openssl req -x509 -newkey rsa:4096 -sha256 -days 365 -nodes \
     -keyout "$CERT_DIR/tls.key" \
     -out "$CERT_DIR/tls.crt" \
-    -subj "/CN=localhost"
+    -subj "/CN=localhost" \
+    -addext "subjectAltName=DNS:localhost,DNS:prometheus,DNS:alertmanager,DNS:grafana,IP:127.0.0.1"
   chmod 0644 "$CERT_DIR/tls.crt" "$CERT_DIR/tls.key"
   echo "Certificados locais gerados dentro do diretório privado .local-lab"
 fi

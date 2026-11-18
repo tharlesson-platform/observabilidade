@@ -6,3 +6,6 @@ cd "$ROOT_DIR"
 
 promtool check rules prometheus/rules/*.yaml prometheus/recording-rules/*.yaml
 promtool test rules prometheus/tests/*.test.yaml
+
+# Configuração completa do perfil local, sem chamadas a AWS/Kubernetes.
+promtool check config --syntax-only docker-compose/local-lab/prometheus/prometheus.yml

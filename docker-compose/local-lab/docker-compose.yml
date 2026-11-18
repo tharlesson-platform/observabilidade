@@ -6,6 +6,9 @@ services:
   prometheus:
     image: prom/prometheus:v2.54.1
     container_name: prometheus
+    environment:
+      NO_PROXY: localhost,127.0.0.1,::1,prometheus,alertmanager,grafana,otel-collector,node-exporter,blackbox-exporter,sample-app-node,sample-app-python,sample-app-java
+      no_proxy: localhost,127.0.0.1,::1,prometheus,alertmanager,grafana,otel-collector,node-exporter,blackbox-exporter,sample-app-node,sample-app-python,sample-app-java
     restart: unless-stopped
     command:
       - --config.file=/etc/prometheus/prometheus.yml
@@ -41,18 +44,20 @@ services:
   alertmanager:
     image: prom/alertmanager:v0.28.0
     container_name: alertmanager
+    environment:
+      NO_PROXY: localhost,127.0.0.1,::1,prometheus,alertmanager,grafana,otel-collector,node-exporter,blackbox-exporter,sample-app-node,sample-app-python,sample-app-java
+      no_proxy: localhost,127.0.0.1,::1,prometheus,alertmanager,grafana,otel-collector,node-exporter,blackbox-exporter,sample-app-node,sample-app-python,sample-app-java
     restart: unless-stopped
     command:
       - --config.file=/etc/alertmanager/alertmanager.yml
       - --storage.path=/alertmanager
       - --web.config.file=/etc/alertmanager/web.yml
-      - --config.expand-env
     env_file:
       - ../../.env
     ports:
       - "127.0.0.1:9093:9093"
     volumes:
-      - ../../alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
       - ../../alertmanager/templates:/etc/alertmanager/templates:ro
       - ../../.local-lab/alertmanager-web.yml:/etc/alertmanager/web.yml:ro
       - ../../.local-lab/certs:/etc/alertmanager/certs:ro
@@ -75,6 +80,8 @@ services:
     environment:
       GF_SECURITY_ADMIN_USER: ${GF_SECURITY_ADMIN_USER:-admin}
       GF_SECURITY_ADMIN_PASSWORD: ${GF_SECURITY_ADMIN_PASSWORD:?Execute scripts/bootstrap-local-lab.sh e use --env-file .local-lab/lab.env}
+      NO_PROXY: localhost,127.0.0.1,::1,prometheus,alertmanager,grafana,otel-collector,node-exporter,blackbox-exporter,sample-app-node,sample-app-python,sample-app-java
+      no_proxy: localhost,127.0.0.1,::1,prometheus,alertmanager,grafana,otel-collector,node-exporter,blackbox-exporter,sample-app-node,sample-app-python,sample-app-java
       GF_METRICS_ENABLED: "true"
       GF_SERVER_PROTOCOL: https
       GF_SERVER_CERT_FILE: /etc/grafana/certs/tls.crt
@@ -91,7 +98,8 @@ services:
     ports:
       - "127.0.0.1:3000:3000"
     volumes:
-      - ../../grafana/provisioning:/etc/grafana/provisioning:ro
+      - ../../grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ../../grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
       - ../../grafana/dashboards-json:/var/lib/grafana/dashboards-json:ro
       - ../../.local-lab/certs:/etc/grafana/certs:ro
       - grafana-data:/var/lib/grafana
