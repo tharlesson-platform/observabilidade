@@ -19,7 +19,7 @@ ENV OTEL_SERVICE_NAME=sample-app-java
 ENV JAVA_TOOL_OPTIONS="-javaagent:/app/opentelemetry-javaagent.jar"
 EXPOSE 8080
 
-HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD wget -qO- http://localhost:8080/healthz || exit 1
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD ["sh", "-ec", "unset http_proxy HTTP_PROXY https_proxy HTTPS_PROXY; exec wget -qO- http://127.0.0.1:8080/healthz"]
 
 USER 10001:10001
 CMD ["java", "-jar", "/app/app.jar"]

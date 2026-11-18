@@ -26,7 +26,7 @@ services:
       - ../../.local-lab/alertmanager.password:/run/secrets/alertmanager.password:ro
       - prometheus-data:/prometheus
     healthcheck:
-      test: ["CMD-SHELL", 'wget -qO- https://localhost:9090/-/healthy --no-check-certificate --user=prom_admin --password="$$(cat /run/secrets/prometheus.password)" >/dev/null']
+      test: ["CMD-SHELL", "unset http_proxy HTTP_PROXY https_proxy HTTPS_PROXY; auth=$$(printf \"%s:%s\" prom_admin \"$$(cat /run/secrets/prometheus.password)\" | base64 | tr -d \"\\n\"); exec wget -qO- --no-check-certificate --header=\"Authorization: Basic $$auth\" https://localhost:9090/-/healthy >/dev/null"]
       interval: 30s
       timeout: 5s
       retries: 5
@@ -59,7 +59,7 @@ services:
       - ../../.local-lab/alertmanager.password:/run/secrets/alertmanager.password:ro
       - alertmanager-data:/alertmanager
     healthcheck:
-      test: ["CMD-SHELL", 'wget -qO- https://localhost:9093/-/healthy --no-check-certificate --user=alert_admin --password="$$(cat /run/secrets/alertmanager.password)" >/dev/null']
+      test: ["CMD-SHELL", "unset http_proxy HTTP_PROXY https_proxy HTTPS_PROXY; auth=$$(printf \"%s:%s\" alert_admin \"$$(cat /run/secrets/alertmanager.password)\" | base64 | tr -d \"\\n\"); exec wget -qO- --no-check-certificate --header=\"Authorization: Basic $$auth\" https://localhost:9093/-/healthy >/dev/null"]
       interval: 30s
       timeout: 5s
       retries: 5
@@ -96,7 +96,7 @@ services:
       - ../../.local-lab/certs:/etc/grafana/certs:ro
       - grafana-data:/var/lib/grafana
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "https://localhost:3000/api/health", "--no-check-certificate"]
+      test: ["CMD-SHELL", "unset http_proxy HTTP_PROXY https_proxy HTTPS_PROXY; exec wget -qO- https://localhost:3000/api/health --no-check-certificate"]
       interval: 30s
       timeout: 5s
       retries: 5
@@ -213,7 +213,7 @@ services:
     ports:
       - "127.0.0.1:8082:8080"
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/healthz', timeout=3).read()"]
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.build_opener(urllib.request.ProxyHandler({})).open('http://127.0.0.1:8080/healthz', timeout=3).read()"]
       interval: 30s
       timeout: 5s
       retries: 5
@@ -239,7 +239,7 @@ services:
     ports:
       - "127.0.0.1:8083:8080"
     healthcheck:
-      test: ["CMD", "wget", "-qO-", "http://localhost:8080/healthz"]
+      test: ["CMD-SHELL", "unset http_proxy HTTP_PROXY https_proxy HTTPS_PROXY; exec wget -qO- http://127.0.0.1:8080/healthz"]
       interval: 30s
       timeout: 5s
       retries: 5
