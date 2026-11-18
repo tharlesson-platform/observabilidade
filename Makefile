@@ -2,7 +2,7 @@ SHELL := /bin/bash
 
 ENV ?= dev
 
-.PHONY: bootstrap-local up-local down-local logs-local validate lint lint-helm deploy destroy plan fmt
+.PHONY: bootstrap-local up-local down-local logs-local smoke-alerts validate lint lint-helm test-prometheus deploy destroy plan fmt
 
 bootstrap-local:
 	bash ./scripts/bootstrap-local-lab.sh
@@ -16,6 +16,9 @@ down-local:
 logs-local:
 	docker compose -f docker-compose/local-lab/docker-compose.yml logs -f
 
+smoke-alerts:
+	bash ./scripts/smoke-alerts.sh
+
 validate:
 	bash ./scripts/validate.sh
 
@@ -24,6 +27,9 @@ lint:
 
 lint-helm:
 	bash ./scripts/lint-helm.sh
+
+test-prometheus:
+	bash ./scripts/test-prometheus.sh
 
 fmt:
 	terraform -chdir=terraform fmt -recursive

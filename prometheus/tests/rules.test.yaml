@@ -1,0 +1,173 @@
+rule_files:
+  - ../rules/*.yaml
+  - ../recording-rules/*.yaml
+
+evaluation_interval: 30s
+
+tests:
+  - name: Blackbox failure must persist for three minutes and then resolve
+    input_series:
+      - series: 'probe_success{job="blackbox-http",instance="https://fixture.local",environment="dev",cluster="fixture"}'
+        values: "1 0x6 1"
+    alert_rule_test:
+      - eval_time: 3m
+        alertname: BlackboxEndpointDown
+        exp_alerts: []
+      - eval_time: 3m30s
+        alertname: BlackboxEndpointDown
+        exp_alerts:
+          - exp_labels:
+              environment: "dev"
+              cluster: "fixture"
+              team: "platform"
+              severity: "critical"
+              service: "blackbox"
+              namespace: "external"
+              job: "blackbox-http"
+              instance: "https://fixture.local"
+            exp_annotations:
+              summary: "Endpoint is down"
+              description: "Blackbox probe failed for https://fixture.local."
+              runbook_url: https://example.local/runbooks/blackbox-endpoint-down
+      - eval_time: 4m
+        alertname: BlackboxEndpointDown
+        exp_alerts: []
+
+  - name: EC2 missed scrapes fire only after the waiting period
+    input_series:
+      - series: 'up{job="node-exporter",instance="node:9100",environment="dev",cluster="fixture"}'
+        values: "1 0x10"
+    alert_rule_test:
+      - eval_time: 5m
+        alertname: EC2InstanceDown
+        exp_alerts: []
+      - eval_time: 5m30s
+        alertname: EC2InstanceDown
+        exp_alerts:
+          - exp_labels:
+              environment: "dev"
+              cluster: "fixture"
+              team: "platform"
+              severity: "critical"
+              service: "ec2"
+              namespace: "infrastructure"
+              job: "node-exporter"
+              instance: "node:9100"
+            exp_annotations:
+              summary: "EC2/VM instance is down"
+              description: "No scrape from node_exporter on node:9100 for 5m."
+              runbook_url: https://example.local/runbooks/ec2-instance-down
+
+  - name: Reduced ECS task count raises a critical alert
+    input_series:
+      - series: 'aws_ecs_service_desired_task_count{service_name="checkout",environment="dev",cluster_name="fixture"}'
+        values: "2x22"
+      - series: 'aws_ecs_service_running_task_count{service_name="checkout",environment="dev",cluster_name="fixture"}'
+        values: "2 1x21"
+    alert_rule_test:
+      - eval_time: 10m
+        alertname: ECSServiceRunningTaskMismatch
+        exp_alerts: []
+      - eval_time: 10m30s
+        alertname: ECSServiceRunningTaskMismatch
+        exp_alerts:
+          - exp_labels:
+              environment: "dev"
+              cluster: "fixture"
+              team: "platform"
+              severity: "critical"
+              service: "ecs"
+              namespace: "infrastructure"
+              service_name: "checkout"
+              cluster_name: "fixture"
+            exp_annotations:
+              summary: "ECS service running task mismatch"
+              description: "Service checkout has fewer running tasks than desired for 10m."
+              runbook_url: https://example.local/runbooks/ecs-running-task-mismatch
+
+  - name: EKS node readiness failure raises a critical alert
+    input_series:
+      - series: 'kube_node_status_condition{node="fixture-node",condition="Ready",status="true",environment="dev",cluster="fixture"}'
+        values: "1 0x21"
+    alert_rule_test:
+      - eval_time: 10m
+        alertname: EKSNodeNotReady
+        exp_alerts: []
+      - eval_time: 10m30s
+        alertname: EKSNodeNotReady
+        exp_alerts:
+          - exp_labels:
+              environment: "dev"
+              cluster: "fixture"
+              team: "platform"
+              severity: "critical"
+              service: "eks"
+              namespace: "infrastructure"
+              node: "fixture-node"
+              condition: "Ready"
+              status: "true"
+            exp_annotations:
+              summary: "EKS node not Ready"
+              description: "Node fixture-node is not Ready for 10m."
+              runbook_url: https://example.local/runbooks/eks-node-not-ready
+
+  - name: The monitoring stack detects a failed Grafana scrape
+    input_series:
+      - series: 'up{job="grafana",instance="grafana:3000",environment="dev",cluster="fixture"}'
+        values: "1 0x10"
+    alert_rule_test:
+      - eval_time: 5m
+        alertname: GrafanaDown
+        exp_alerts: []
+      - eval_time: 5m30s
+        alertname: GrafanaDown
+        exp_alerts:
+          - exp_labels:
+              environment: "dev"
+              cluster: "fixture"
+              team: "platform"
+              severity: "critical"
+              service: "grafana"
+              namespace: "observability"
+              job: "grafana"
+              instance: "grafana:3000"
+            exp_annotations:
+              summary: "Grafana is down"
+              description: "Grafana target grafana:3000 is unavailable for 5m."
+              runbook_url: https://example.local/runbooks/grafana-down
+
+  - name: Application alerts and recording rules share the same error ratio
+    input_series:
+      - series: 'http_server_requests_total{service="checkout",namespace="payments",environment="dev",cluster="fixture",team="platform",status_code="200"}'
+        values: "0+54x30"
+      - series: 'http_server_requests_total{service="checkout",namespace="payments",environment="dev",cluster="fixture",team="platform",status_code="500"}'
+        values: "0+6x30"
+    alert_rule_test:
+      - eval_time: 10m
+        alertname: AppHighErrorRate
+        exp_alerts: []
+      - eval_time: 15m
+        alertname: AppHighErrorRate
+        exp_alerts:
+          - exp_labels:
+              environment: "dev"
+              cluster: "fixture"
+              team: "platform"
+              severity: "critical"
+              service: "checkout"
+              namespace: "payments"
+            exp_annotations:
+              summary: "Application high error rate"
+              description: "Service checkout has 5xx rate above 5% for 10m."
+              runbook_url: https://example.local/runbooks/app-high-error-rate
+    promql_expr_test:
+      - expr: service:http_error_rate:ratio5m
+        eval_time: 11m
+        exp_samples:
+          - labels: 'service:http_error_rate:ratio5m{cluster="fixture",environment="dev",namespace="payments",service="checkout",team="platform"}'
+            value: 0.1
+      - expr: service:http_requests_per_second:rate5m
+        eval_time: 11m
+        exp_samples:
+          - labels: 'service:http_requests_per_second:rate5m{cluster="fixture",environment="dev",namespace="payments",service="checkout",team="platform"}'
+            value: 2

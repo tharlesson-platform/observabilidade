@@ -16,6 +16,7 @@ crash.log
 
 # Logs
 *.log
+/artifacts/
 
 # Python
 __pycache__/

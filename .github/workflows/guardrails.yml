@@ -94,3 +94,16 @@ jobs:
             sha256sum --check --strict
           tar -xzf "$helm_dir/helm.tgz" -C "$helm_dir" linux-arm64/helm
           PATH="$helm_dir/linux-arm64:$PATH" bash ./scripts/lint-helm.sh
+      - name: Validate and test Prometheus rules
+        shell: bash
+        run: |
+          set -euo pipefail
+          tool_dir=$(mktemp -d)
+          trap 'rm -rf -- "$tool_dir"' EXIT
+          curl -fsSL --retry 2 --max-time 90 \
+            https://github.com/prometheus/prometheus/releases/download/v2.54.1/prometheus-2.54.1.linux-arm64.tar.gz \
+            -o "$tool_dir/prometheus.tgz"
+          printf '%s  %s\n' '3d9946ca730f2679bbd63e9d40e559a0ba227a638d237e723af1a99bd7098263' "$tool_dir/prometheus.tgz" |
+            sha256sum --check --strict
+          tar -xzf "$tool_dir/prometheus.tgz" -C "$tool_dir" prometheus-2.54.1.linux-arm64/promtool
+          PATH="$tool_dir/prometheus-2.54.1.linux-arm64:$PATH" bash ./scripts/test-prometheus.sh
