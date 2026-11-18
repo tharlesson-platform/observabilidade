@@ -3,11 +3,16 @@ WORKDIR /src
 COPY pom.xml /src/pom.xml
 COPY src /src/src
 RUN mvn -q -DskipTests package
+ARG OTEL_JAVAAGENT_SHA256=4cff4ab46179260a61fc0d884f3f170cfbd9d2962dd260be2cff31262d0c7618
+RUN curl --fail --silent --show-error --location --retry 3 \
+      https://repo.maven.apache.org/maven2/io/opentelemetry/javaagent/opentelemetry-javaagent/2.11.0/opentelemetry-javaagent-2.11.0.jar \
+      -o /src/opentelemetry-javaagent.jar \
+    && echo "${OTEL_JAVAAGENT_SHA256}  /src/opentelemetry-javaagent.jar" | sha256sum --check --strict
 
 FROM eclipse-temurin:25-jre-alpine@sha256:e1898fd6a11fc965a994d8ace186fd3585aeb636cf8f05f47a723fcfee0b0918
 WORKDIR /app
 COPY --from=build /src/target/sample-app-java-1.0.0.jar /app/app.jar
-RUN wget -q -O /app/opentelemetry-javaagent.jar https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/download/v2.11.0/opentelemetry-javaagent.jar
+COPY --from=build /src/opentelemetry-javaagent.jar /app/opentelemetry-javaagent.jar
 
 ENV PORT=8080
 ENV OTEL_SERVICE_NAME=sample-app-java

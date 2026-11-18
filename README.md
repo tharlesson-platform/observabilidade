@@ -415,3 +415,7 @@ build-args de tag Jenkins não substituem mais a base revisada. Exemplos Java e 
 aplicação permanecem somente leitura para esse usuário; temporários usam /tmp.
 Nenhuma imagem é publicada ou promovida automaticamente por esta correção.
 Reversão: reverter a PR após revisão, sem remover volumes ou dados.
+
+O agente OpenTelemetry Java 2.11.0 é baixado no estágio de build com curl
+e verificado pelo SHA256 publicado no Maven Central antes da cópia para
+a imagem final. O runtime não precisa instalar ferramenta de download.
